@@ -1,0 +1,38 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}!
+<!-- Подключаем новый файл с нашим тегом -->
+{% load custom_tags %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content %}
+   <h1>Статьи и новости</h1>
+   <h3>Всего новостей: {{ news|length }}</h3>
+
+   <hr>
+   {% if news %}
+       <table>
+           <tr>
+               <td>Заголовок</td>
+               <td>Дата</td>
+               <td>Событие</td>
+               <td>Рейтинг</td>
+           </tr>
+
+           {% for post in news %}
+           <tr>
+               <td>{{ post.title|truncatewords:3|censor }}</td>
+               <td>{{ post.creation_time|date:'M d Y' }}</td>
+               <td>{{ post.preview|censor }}</td>
+               <td>{{ post.rating }}</td>
+           </tr>
+           {% endfor %}
+
+       </table>
+   {% else %}
+       <h2>Статей нет!</h2>
+   {% endif %}
+{% endblock content %}
