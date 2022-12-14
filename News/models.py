@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Count
 
 
 class Author(models.Model):
@@ -11,16 +12,30 @@ class Author(models.Model):
     # рейтинг Автора
     rating = models.IntegerField(default=0)
 
-    def update_rating(self, aa, ac, caa):
+    def update_rating(self):
         """ Метод для обновления рейтинга.
-            Суммарный рейтинг каждой статьи автора(-aa-) умножается на 3;
-            Суммарный рейтинг всех комментариев автора(-ac-);
-            Суммарный рейтинг всех комментариев к статьям автора(-caa-). """
-        self.aa = aa
-        self.ac = ac
-        self.caa = caa
-        self.rating += (aa*3+ac+caa)  # расчет по заданной формуле
-        self.save()
+            Суммарный рейтинг каждой статьи автора умножается на 3;
+            Суммарный рейтинг всех комментариев автора;
+            Суммарный рейтинг всех комментариев к статьям автора. """
+        # рейтинг каждой статьи автора
+        post_rating = Post.objects.filter(author_id=self.id).aggregate(Sum('rating'))['rating__sum'] * 3
+        # рейтинг всех комментариев автора
+        comment_rating = Comment.objects.filter(id=self.id).aggregate(Sum('rating'))['rating__sum']
+
+        # id всех постов автора для поисков по комментариям
+        author_posts_id = Post.objects.filter(author_id=self.id).values('id')
+
+        y = []  # стартовый список для подсчета рейтинга
+        for i in range(len(author_posts_id)):  # цикл поиска по количеству найденных постов в author_posts_id
+            a = author_posts_id[i]['id']  # id постов этого автора
+            # добавляем сумму рейтингов комментариев найденных в a -> id
+            y.append(Comment.objects.filter(post_id=a).aggregate(Sum('rating'))['rating__sum'])
+        author_posts_comment_rating = sum(y)  # суммируем рейтинг всех комментариев к статьям автора
+        # получаем общий рейтинг автора
+        result = post_rating + comment_rating + author_posts_comment_rating
+
+        self.rating = result
+        self.save()  # сохраняем результат
 
 
 class Category(models.Model):
