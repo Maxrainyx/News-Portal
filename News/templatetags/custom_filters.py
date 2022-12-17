@@ -14,6 +14,5 @@ def censor(t):
         if txt[i] in censor_list:
             stars_num = '*'*len(txt[i])
             txt[i] = ''.join(stars_num)
-
-    res = ' '.join(txt)
-    return f'{res}'
+        res = ' '.join(txt)
+        return f'{res}'

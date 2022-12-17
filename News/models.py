@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Sum
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -37,11 +38,16 @@ class Author(models.Model):
         self.rating = result
         self.save()  # сохраняем результат
 
+    def __str__(self):
+        return f'{self.full_name}'
+
 
 class Category(models.Model):
     """ Модель категорий новостей/статей — темы, которые они отражают (спорт, политика, образование и т. д.). """
     category_name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return f'{self.category_name}'
 
 # выбор статья или новость для модели Post
 article = 'A'  # запись в базе если - статья
@@ -73,7 +79,7 @@ class Post(models.Model):
     def preview(self):
         """ Метод, который возвращает начало статьи(предварительный просмотр) длиной 124 символа
          и добавляет многоточие в конце."""
-        return f"{self.text[:124]}..."
+        return f"{self.text[:30]}..."
 
     def like(self):
         """ Метод для увеличения рейтинга """
@@ -84,6 +90,9 @@ class Post(models.Model):
         """ Метод для уменьшения рейтинга """
         self.rating -= 1
         self.save()
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):

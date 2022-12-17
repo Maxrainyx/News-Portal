@@ -1,6 +1,7 @@
 {% extends 'flatpages/default.html' %}
 
 {% load custom_filters %}
+<!-- Подключаем новый файл с нашим тегом -->
 {% load custom_tags %}
 
 {% block title %}
@@ -8,14 +9,18 @@ Posts
 {% endblock title %}
 
 {% block content %}
-   <h1>Статьи и новости</h1>
-   <h3>Всего новостей: {{ news|length }}</h3>
+   <h1>Поиск по статьям</h1>
+   <h3>Всего найдено: {{ news|length }}</h3>
 <hr>
+    <form action="" method="get">
+       {{ filterset.form.as_p }}
+       <input type="submit" value="Найти" />
+   </form>
 
 
 
    {% if news %}
-       <table>
+        <table>
            <tr>
                <td>ID</td>
                <td>Заголовок</td>
