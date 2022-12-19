@@ -20,8 +20,9 @@ class Author(models.Model):
             Суммарный рейтинг всех комментариев к статьям автора. """
         # рейтинг каждой статьи автора
         post_rating = Post.objects.filter(author_id=self.id).aggregate(Sum('rating'))['rating__sum'] * 3
-        # рейтинг всех комментариев автора
-        comment_rating = Comment.objects.filter(id=self.id).aggregate(Sum('rating'))['rating__sum']
+        # рейтинг всех комментариев автор
+        us_id = self.user_id
+        comment_rating = Comment.objects.filter(user_id=us_id).aggregate(Sum('rating'))['rating__sum']
 
         # id всех постов автора для поисков по комментариям
         author_posts_id = Post.objects.filter(author_id=self.id).values('id')
@@ -50,7 +51,7 @@ class Category(models.Model):
         return f'{self.category_name}'
 
 # выбор статья или новость для модели Post
-article = 'A'  # запись в базе если - статья
+article = 'A' # запись в базе если - статья
 news = 'N'  # запись в базе если - новость
 TYPE = [  # лист сетов
         (article, 'Статья'),

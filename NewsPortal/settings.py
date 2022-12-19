@@ -26,11 +26,7 @@ SECRET_KEY = 'django-insecure--2-zfbdp(83#=$_i^w4&zvz1p^!38-+6x+6m@d(so^(z&(!e&c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-LOGIN_URL = '/admin/'
-LOGIN_REDIRECT_URL = '/news/'
-
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -43,12 +39,29 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'News',
+    'sign',
+    'protect',
 
     'django.contrib.sites',
     'django.contrib.flatpages',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 SITE_ID = 1
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/news/'
+
+ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -75,6 +88,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+
             ],
         },
     },
@@ -93,6 +108,13 @@ DATABASES = {
     }
 }
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
