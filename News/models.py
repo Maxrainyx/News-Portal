@@ -46,17 +46,21 @@ class Author(models.Model):
 class Category(models.Model):
     """ Модель категорий новостей/статей — темы, которые они отражают (спорт, политика, образование и т. д.). """
     category_name = models.CharField(max_length=255, unique=True)
+    subscribers = models.ManyToManyField(User)
 
     def __str__(self):
         return f'{self.category_name}'
 
+    def new_sub(self):
+        return f'{self.subscribers}'
+
 # выбор статья или новость для модели Post
-article = 'A' # запись в базе если - статья
+article = 'A'  # запись в базе если - статья
 news = 'N'  # запись в базе если - новость
 TYPE = [  # лист сетов
-        (article, 'Статья'),
-        (news, 'Новость'),
-    ]
+    (article, 'Статья'),
+    (news, 'Новость'),
+]
 
 
 class Post(models.Model):
@@ -94,6 +98,13 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.id)])
+
+    def get_category(self):
+        return " ".join([str(p) for p in self.category.all()])
+
+    def __str__(self):
+        return f'{self.author}'
+
 
 
 class PostCategory(models.Model):

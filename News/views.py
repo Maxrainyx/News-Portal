@@ -1,11 +1,13 @@
+
 from django.views.generic import (
-    ListView, DetailView, CreateView, UpdateView, DeleteView, View
+    ListView, DetailView, CreateView, UpdateView, DeleteView
 )
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
 from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
 
 
 class PostsList(ListView):
@@ -39,6 +41,33 @@ class PostDetail(DetailView):
     template_name = 'post.html'
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'post'
+
+
+    def post(self, request, *args, **kwargs):
+        p_k = self.request.path.split("/")[-1]
+        category = Post.objects.filter(id=pk).values('category__category_name')
+        for i in category:
+            m = str(i['category__category_name'])
+            x = Category.objects.get(category_name=(request.POST.get(m, 'Общая')))
+            x.subscribers.add(request.user.id)
+
+        """
+        html_content = render_to_string(
+            'sub_done.html'
+        )
+
+        # в конструкторе уже знакомые нам параметры, да? Называются правда немного по-другому, но суть та же.
+        msg = EmailMultiAlternatives(
+             subject=f'{category.category_name}',
+             body=self.category.message,  # это то же, что и message
+             from_email='maxrainyx@yandex.ru',
+             to=['maxrainy@gmail.com'],  # это то же, что и recipients_list
+         )
+         msg.attach_alternative(html_content, "text/html")  # добавляем html
+
+         msg.send()  # отсылаем"""
+
+        return redirect(f"/news/{p_k}")
 
 
 class PostCreate(PermissionRequiredMixin, CreateView):

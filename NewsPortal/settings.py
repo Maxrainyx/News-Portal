@@ -63,6 +63,13 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'maxrainyX'
+EMAIL_HOST_PASSWORD = 'mfSe%7PKEq6cy4s'
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = 'maxrainyX@yandex.ru'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

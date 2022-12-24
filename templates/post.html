@@ -6,10 +6,31 @@
 Post
 {% endblock title %}
 
+
 <!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
 {% block content %}
+{% csrf_token %}
 <h1>{{ post.title|censor  }}</h1>
 <h4>{{ post.creation_time|date:'M d Y' }}</h4>
+<hr>
 <a>{{ post.text|censor  }}</a>
+<hr>
+
+
+
+<b>Категории:</b>
+    {% for i in post.get_category.split %}
+        <form action= "" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for=i name="category_name"> {{ i }} </label>
+            <button type="button" value="category_name">Sub</button>
+            <br>
+        </form>
+    {% endfor %}
+
+
+
+
+
 {% endblock content %}
 
