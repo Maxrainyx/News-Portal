@@ -53,7 +53,7 @@ class Category(models.Model):
 
     def new_sub(self):
         return f'{self.subscribers}'
-    
+
 
 # выбор статья или новость для модели Post
 article = 'A'  # запись в базе если - статья
