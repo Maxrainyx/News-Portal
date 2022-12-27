@@ -1,37 +1,28 @@
-
 from django.views.generic import (
-    ListView, DetailView, CreateView, UpdateView, DeleteView
+    ListView, DetailView, CreateView, UpdateView, DeleteView, View
 )
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from .models import Post
+from django.core.mail import EmailMultiAlternatives
+from .models import Post, Category, Author, User
 from .filters import PostFilter
 from .forms import PostForm
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
+from django.core.mail import send_mail
 
 
 class PostsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
     model = Post
     # Поле, которое будет использоваться для сортировки объектов
-    ordering = '-creation_time'
+    ordering = 'creation_time'
     # Указываем имя шаблона, в котором будут все инструкции о том,
     # как именно пользователю должны быть показаны наши объекты
     template_name = 'news.html'
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'news'
-    paginate_by = 5
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        self.filterset = PostFilter(self.request.GET, queryset)
-        return self.filterset.qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['filterset'] = self.filterset
-        return context
+    paginate_by = 15
 
 
 class PostDetail(DetailView):
@@ -43,31 +34,34 @@ class PostDetail(DetailView):
     context_object_name = 'post'
 
 
-    def post(self, request, *args, **kwargs):
-        p_k = self.request.path.split("/")[-1]
-        category = Post.objects.filter(id=pk).values('category__category_name')
-        for i in category:
-            m = str(i['category__category_name'])
-            x = Category.objects.get(category_name=(request.POST.get(m, 'Общая')))
-            x.subscribers.add(request.user.id)
+class CategoriesList(ListView):
+    model = Category
+    ordering = 'category'
+    template_name = 'categories.html'
+    context_object_name = 'categories'
 
-        """
-        html_content = render_to_string(
-            'sub_done.html'
-        )
+    def get(self, request, *args, **kwargs):
+        category = Category.objects.all()
+        return render(request, 'categories.html', {"category": category})
 
-        # в конструкторе уже знакомые нам параметры, да? Называются правда немного по-другому, но суть та же.
-        msg = EmailMultiAlternatives(
-             subject=f'{category.category_name}',
-             body=self.category.message,  # это то же, что и message
-             from_email='maxrainyx@yandex.ru',
-             to=['maxrainy@gmail.com'],  # это то же, что и recipients_list
-         )
-         msg.attach_alternative(html_content, "text/html")  # добавляем html
 
-         msg.send()  # отсылаем"""
+class CategoryView(View):
+    model = Category
+    template_name = 'categories.html'
+    context_object_name = 'category'
 
-        return redirect(f"/news/{p_k}")
+    def get(self, request, pk, *args, **kwargs):
+        category = Category.objects.get(id=pk)
+        posts = []
+        for post_obj in Post.objects.filter():
+            post_obj.category.filter(category_name=category)
+
+        return render(request, 'category.html', {'category': category})
+
+    def post(self, request, pk, *args, **kwargs):
+        category = Category.objects.get(id=pk)
+        category.subscribers.add(request.user.id)
+        return redirect('categories')
 
 
 class PostCreate(PermissionRequiredMixin, CreateView):
@@ -83,6 +77,7 @@ class PostCreate(PermissionRequiredMixin, CreateView):
             post.type = 'N'
         else:
             post.type = 'A'
+        post.author_id = self.request.user.author.id
         return super().form_valid(form)
 
 
@@ -116,4 +111,5 @@ class PostSearch(ListView):
         context = super().get_context_data(**kwargs)
         context['filterset'] = self.filterset
         return context
+
 

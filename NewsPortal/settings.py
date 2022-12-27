@@ -38,9 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'News',
+    'django_apscheduler',
+
     'sign',
     'protect',
+
+    'News.apps.NewsConfig',
 
     'django.contrib.sites',
     'django.contrib.flatpages',
@@ -55,6 +58,9 @@ SITE_ID = 1
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/news/'
 
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
 ACCOUNT_EMAIL_REQUIRED = True
@@ -66,9 +72,9 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'maxrainyX'
-EMAIL_HOST_PASSWORD = 'mfSe%7PKEq6cy4s'
+EMAIL_HOST_PASSWORD = '^cQj4#8YeDfy5@$'
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'maxrainyX@yandex.ru'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -167,3 +173,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
+"""if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'"""

@@ -10,7 +10,6 @@ class PostForm(forms.ModelForm):
         fields = [
             'title',
             'text',
-            'author',
             'category',
 
         ]
@@ -26,4 +25,3 @@ class PostForm(forms.ModelForm):
             )
 
         return cleaned_data
-

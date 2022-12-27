@@ -14,4 +14,11 @@ class PostFilter(FilterSet):
             'creation_time': ['gt'],
             'type': ['exact'],
             'author': ['exact'],
+            'category': ['exact'],
         }
+
+
+class CategoryFilter(FilterSet):
+    class Meta:
+        model = Post
+        fields = {}

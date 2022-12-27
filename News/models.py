@@ -53,6 +53,7 @@ class Category(models.Model):
 
     def new_sub(self):
         return f'{self.subscribers}'
+    
 
 # выбор статья или новость для модели Post
 article = 'A'  # запись в базе если - статья
@@ -100,12 +101,14 @@ class Post(models.Model):
         return reverse('post_detail', args=[str(self.id)])
 
     def get_category(self):
+
         return " ".join([str(p) for p in self.category.all()])
 
-    def __str__(self):
-        return f'{self.author}'
 
 
+
+"""    def __str__(self):
+        return f'{self.author}'"""
 
 class PostCategory(models.Model):
     """ Промежуточная модель для связи «многие ко многим» (Post, Category) """

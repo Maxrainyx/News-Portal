@@ -9,7 +9,7 @@ Posts
 
 {% block content %}
    <h1>Статьи и новости</h1>
-   <h3>Всего новостей: {{ news|length }}</h3>
+   <h3>Всего событий на странице: {{ news|length }}</h3>
 <hr>
 
 
@@ -17,9 +17,8 @@ Posts
    {% if news %}
        <table>
            <tr>
-               <td>ID</td>
                <td>Заголовок</td>
-               <td>Тип</td>
+               <td>Категория</td>
                <td>Дата</td>
                <td>Событие</td>
                <td>Рейтинг</td>
@@ -28,11 +27,13 @@ Posts
            {% for post in news %}
            <tr>
 
-               <td>{{ post.id }}</td>
+
                <td>{{ post.title|truncatewords:3|censor }}</td>
-               <td>{{ post.type }}</td>
+               <td>{% for category in post.category.all %}
+    <a href="http://127.0.0.1:8000/news/categories/{{ category.id }}"><i> {{ category }}</i></a>,
+{% endfor %}</td>
                <td>{{ post.creation_time|date:'M d Y' }}</td>
-               <td>{{ post.preview|censor }}</td>
+               <td><a href="http://127.0.0.1:8000/news/{{ post.id }}"><i> {{ post.preview|censor }} </i></a></td>
                <td>{{ post.rating }}</td>
            </tr>
            {% endfor %}

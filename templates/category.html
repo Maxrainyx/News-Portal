@@ -1,0 +1,16 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+{% block title %}
+
+{% endblock title %}
+{% block content %}
+
+<h2>Категория:</h2>
+<form action= "{% url 'category_add' category.id %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <b>{{ category }}</b><input type="submit" value="Подписаться">
+
+</form>
+{{ category.all }}
+<br>
+{% endblock content %}

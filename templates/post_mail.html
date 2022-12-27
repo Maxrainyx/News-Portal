@@ -1,0 +1,8 @@
+
+{% load custom_filters %}
+{% block content %}
+    <h2>{{ post.title }}</h2>
+    <p> {{ post }} по вопросу {{ post.text|truncatechars:50 }}.</p>
+
+<a href="127.0.0.1:8000/news/{{ post.id }}"> Читать полностью</a>
+{% endblock content %}

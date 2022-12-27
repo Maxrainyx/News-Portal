@@ -1,0 +1,15 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+{% block title %}
+
+{% endblock title %}
+{% block content %}
+
+<h1>Категории:</h1><hr>
+{% for cat in category %}
+
+<a href="{{cat.get_link}}" >{{cat}}</a>
+<br>
+{% endfor %}
+<hr>
+{% endblock content %}
