@@ -8,7 +8,7 @@
 <h1>Категории:</h1><hr>
 {% for cat in category %}
 
-<a href="{{cat.get_link}}" >{{cat}}</a>
+<a href="http://127.0.0.1:8000/news/categories/{{cat.id}}" >{{cat}}</a>
 <br>
 {% endfor %}
 <hr>
