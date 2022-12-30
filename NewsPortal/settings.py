@@ -74,7 +74,15 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = 'maxrainyX'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER+ '@yandex.ru'
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
