@@ -9,6 +9,7 @@ from .forms import PostForm
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
+from django.db.models.signals import post_save
 
 
 class PostsList(ListView):
@@ -52,7 +53,6 @@ class CategoryView(View):
 
     def get(self, request, pk, *args, **kwargs):
         category = Category.objects.get(id=pk)
-        posts = []
         for post_obj in Post.objects.filter():
             post_obj.category.filter(category_name=category)
 

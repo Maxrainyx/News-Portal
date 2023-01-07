@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -38,16 +37,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_apscheduler',
+    'django_apscheduler',  # планировщик заданий
 
+    # логин и защиты:
     'sign',
     'protect',
 
+    # добавление настроек своего приложения:
     'News.apps.NewsConfig',
 
     'django.contrib.sites',
     'django.contrib.flatpages',
-
+    # авторизации:
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -69,20 +70,21 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
+# настройки почты
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'maxrainyX'
-EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER+ '@yandex.ru'
+EMAIL_HOST_USER = 'dedmaxrainy'
+EMAIL_HOST_PASSWORD = 'isjjyfedgvwluhbs'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
+SERVER_EMAIL = 'dedmaxrainy@yandex.ru'
 
+# celery
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -117,7 +119,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'NewsPortal.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -155,7 +156,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -166,7 +166,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -181,5 +180,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
-"""if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'"""

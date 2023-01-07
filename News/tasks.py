@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
-from NewsPortal.settings import DEFAULT_FROM_EMAIL
-from django.core.mail import send_mail
 
+from django.core.mail import send_mail
+from NewsPortal.settings import DEFAULT_FROM_EMAIL
 from .models import Post, Category
 from celery import shared_task
 import time
@@ -22,10 +22,10 @@ def new_post_add():
         user_emails = []
         cat = ""
         for category in new_post.category.all():
-            cat += f" {category}"
-            user_emails += get_subs(category)
+            cat += f" {category.category_name}"
+            user_emails += get_subs(category.category_name)
         email_subject = f"Новый пост в категориях: {cat}"
-        email_message = f'{new_post.title}\n Подробнее: 127.0.0.1:8000/news/ {new_post.id}'
+        email_message = f'{new_post.title}\n Подробнее: 127.0.0.1:8000/news/{new_post.id}'
 
         send_mail(subject=email_subject,
                   message=email_message,
@@ -53,7 +53,7 @@ def weekly_mail():
         send_mail(subject=email_subject,
                   message=email_message,
                   from_email=DEFAULT_FROM_EMAIL,
-                  recipient_list=user_emails,
+                  recipient_list='maxrainyx@yandex.ru',
                   fail_silently=False,
                   )
 
