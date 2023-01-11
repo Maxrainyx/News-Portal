@@ -7,6 +7,11 @@
 Posts
 {% endblock title %}
 
+{% load cache %} <!-- Загружаем кэширование -->
+{% cache 300 content %} <!-- Кэшируем отдельный блок на 30 секунд -->
+
+
+
 {% block content %}
    <h1>Статьи и новости</h1>
    <h3>Всего событий на странице: {{ news|length }}</h3>
@@ -38,6 +43,7 @@ Posts
            </tr>
            {% endfor %}
 
+
        </table>
    {% else %}
        <h2>Статей нет!</h2>
@@ -61,3 +67,4 @@ Posts
    {% endif %}
 
 {% endblock content %}
+{% endcache %}

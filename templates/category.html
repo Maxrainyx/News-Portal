@@ -1,16 +1,44 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+
 {% block title %}
 
+
 {% endblock title %}
+{% load cache %}
+    {% cache 600 content %}
+
 {% block content %}
 
+
 <h2>Категория:</h2>
-<form action= "{% url 'category_add' category.id %}" method="POST" enctype="multipart/form-data">
+<form action= "{% url 'category_view' category.id %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <b>{{ category }}</b><input type="submit" value="Подписаться">
+    <h3><i>{{ category }}</i></h3><input type="submit" value="Подписаться">
 
 </form>
-{{ category.all }}
+<hr>
+<h3>Посты в категории <i>{{ category }}</i>:</h3>
+
+ <table>
+           <tr class="{% cycle 'blue' 'white' %}">
+               <td><h5>Заголовок</h5></td>
+               <td><h5>Содержание</h5></td>
+               <td><h5>Рейтинг</h5></td>
+           </tr>
+     {% for post in category_post %}
+           <tr class="{% cycle 'blue' 'white' %}">
+               <td><b>{{ post.title|truncatewords:5 }} </b></td>
+               <td> {{ post.text|truncatewords:20 }} </td>
+               <td>{{ post.rating }}</td>
+           </tr>
+           {% endfor %}
+
+
+
 <br>
+
 {% endblock content %}
+{% endcache %}

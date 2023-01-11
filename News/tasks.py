@@ -5,7 +5,6 @@ from django.core.mail import send_mail
 from NewsPortal.settings import DEFAULT_FROM_EMAIL
 from .models import Post, Category
 from celery import shared_task
-import time
 
 
 def get_subs(category):

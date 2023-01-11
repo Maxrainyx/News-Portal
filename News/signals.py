@@ -1,14 +1,12 @@
 from .tasks import new_post_add, get_subs
 from django.dispatch import receiver
-from .models import PostCategory, Post, Category
-from django.db.models.signals import post_save, m2m_changed
-from datetime import datetime, timedelta
-from django.core.mail import send_mail, mail_managers
-from celery import shared_task
+from .models import Post
+from django.db.models.signals import m2m_changed
+from django.core.mail import send_mail
 from NewsPortal.settings import DEFAULT_FROM_EMAIL
 
 
-@receiver(post_save, sender=Post)
+@receiver(m2m_changed, sender=Post)
 def notify_subs(sender, instance, **kwargs):
     new_post = Post.objects.all().order_by('-creation_time').first()
     if new_post:

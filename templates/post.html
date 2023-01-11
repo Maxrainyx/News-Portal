@@ -11,8 +11,8 @@
 {% block content %}
 {% csrf_token %}
 
-<h4>{{ post.creation_time|date:'M d Y' }}</h4>
 <h1>{{ post.title|censor  }}</h1>
+<h4>От {{ post.creation_time|date:'M d Y' }}</h4>
 <hr>
 <a href="http://127.0.0.1:8000/news/{{ post.id }}/update/"><i> Редактировать </i></a> ,  <a href="http://127.0.0.1:8000/news/{{ post.id }}/delete/"><i> Удалить </i></a>
 <hr>
@@ -23,6 +23,24 @@
     {% for category in post.category.all %}
     <a href="http://127.0.0.1:8000/news/categories/{{ category.id }}"><i> {{ category }}</i></a><br>
 {% endfor %}
+<hr>
+<hr>
 
 
+
+
+
+<br>
+<h4>Комментарии.</h4>
+<br>
+{% for comment in comment_text.text %}
+<b>Комментарий №{{comment.id}} (пользователь № {{ comment.user_id }}) : </b><a>{{ comment.text }}</a>
+<a>{{ username }}</a>
+
+<hr>
+{% empty %}
+<a>Комментариев пока нет :( </a>
+{% endfor %}
+
+<hr>
 {% endblock content %}

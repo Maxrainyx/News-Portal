@@ -10,7 +10,7 @@ Posts
 
 {% block content %}
    <h1>Поиск по статьям</h1>
-   <h3>Всего найдено: {{ news|length }}</h3>
+   <h3>Всего на странице: {{ news|length }}</h3>
 <hr>
     <form action="" method="get">
        {{ filterset.form.as_p }}
@@ -21,7 +21,7 @@ Posts
 
    {% if news %}
         <table>
-           <tr>
+           <tr class="{% cycle 'blue' 'white' %}">
                <td>Заголовок</td>
                <td>Категория</td>
                <td>Дата</td>
@@ -30,8 +30,7 @@ Posts
            </tr>
 
            {% for post in news %}
-           <tr>
-
+            <tr class="{% cycle 'blue' 'white' %}">
 
                <td>{{ post.title|truncatewords:3|censor }}</td>
                <td>{% for category in post.category.all %}

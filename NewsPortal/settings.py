@@ -64,6 +64,7 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25
 
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
+# регистрация/авторизация
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
@@ -85,6 +86,123 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+# кэширование
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),  # Указываем, куда будем сохранять кэшируемые файлы!
+        # Не забываем создать папку cache_files внутри папки с manage.py!
+    }
+}
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'style': '{',
+    'formatters': {
+        'f_debug': {
+            'format': '{asctime}-{levelname}-{message}'
+        },
+        'f_warning': {
+            'format': '{asctime}-{levelname}-{pathname}-{message}'
+        },
+        'f_error': {
+            'format': '{asctime}-{levelname}-{pathname}-{message}-{exc_info}'
+        },
+        'f_django': {
+            'format': '{asctime}-{levelname}-{message}-{exc_info}'
+        },
+        'f_general': {
+            'format': '{asctime}-{levelname}-{module}-{message}'
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+            # фильтр, который пропускает записи только в случае, когда DEBUG = True.
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+            # фильтр, который пропускает записи только в случае, когда DEBUG = False.
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'f_debug'
+        },
+        'console_warning': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'f_warning'
+        },
+        'console_error': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'f_error'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'f_warnings',
+        },
+        'file_general': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatters': 'f_warning',
+        },
+        'file_errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatters': 'f_error',
+        },
+        'file_security': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatters': 'f_general',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file_general', 'console_warning', 'console_error'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file_errors', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['console', 'file_errors', 'mail_admins'],
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['console', 'file_errors'],
+            'propagate': True,
+        },
+        'django.db.backend': {
+            'handlers': ['console', 'file_errors'],
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['console', 'file_security'],
+            'propagate': False,
+        },
+
+    }
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
+from django.core.cache import cache
 
 
 class Author(models.Model):
@@ -20,7 +21,7 @@ class Author(models.Model):
             Суммарный рейтинг всех комментариев к статьям автора. """
         # рейтинг каждой статьи автора
         post_rating = Post.objects.filter(author_id=self.id).aggregate(Sum('rating'))['rating__sum'] * 3
-        # рейтинг всех комментариев автор
+        # рейтинг всех комментариев автора
         us_id = self.user_id
         comment_rating = Comment.objects.filter(user_id=us_id).aggregate(Sum('rating'))['rating__sum']
 
@@ -101,7 +102,21 @@ class Post(models.Model):
         return reverse('post_detail', args=[str(self.id)])
 
     def get_category(self):
-        return " ".join([str(p) for p in self.category.all()])
+        return " ".join([str(p) for p in self.categall()])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # сначала вызываем метод родителя, чтобы объект сохранился
+        cache.delete(f'product-{self.pk}')
+
+    def get_comments(self):
+        res_list = list()
+        q_list = Comment.objects.filter(post_id=self.id).values('text')
+        for comment in q_list:
+            res_list.append(comment['text'])
+        return res_list
+
+    def __str__(self):
+        return f'{self.title}'
 
 
 class PostCategory(models.Model):
@@ -135,3 +150,4 @@ class Comment(models.Model):
         """ Метод для уменьшения рейтинга """
         self.rating -= 1
         self.save()
+

@@ -3,9 +3,16 @@
 {% block title %}
 
 {% endblock title %}
+
+{% load cache %} <!-- Загружаем кэширование -->
+    {% cache 60 content %} <!-- Кэшируем отдельный блок на 30 секунд -->
+
+
+
 {% block content %}
 
 <h1>Категории:</h1><hr>
+
 {% for cat in category %}
 
 <a href="http://127.0.0.1:8000/news/categories/{{cat.id}}" >{{cat}}</a>
@@ -13,3 +20,6 @@
 {% endfor %}
 <hr>
 {% endblock content %}
+
+{% endcache %}
+

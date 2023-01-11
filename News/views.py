@@ -1,29 +1,27 @@
 from django.views.generic import (
-    ListView, DetailView, CreateView, UpdateView, DeleteView, View
+    ListView, DetailView, CreateView, UpdateView, DeleteView,
 )
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.mail import EmailMultiAlternatives
-from .models import Post, Category, Author, User
+from .models import Post, Category, Comment, User
 from .filters import PostFilter
 from .forms import PostForm
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.db.models.signals import post_save
+from django.core.cache import cache
 
 
 class PostsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
     model = Post
     # Поле, которое будет использоваться для сортировки объектов
-    ordering = 'creation_time'
+    ordering = '-creation_time'
     # Указываем имя шаблона, в котором будут все инструкции о том,
     # как именно пользователю должны быть показаны наши объекты
     template_name = 'news.html'
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'news'
-    paginate_by = 15
+    paginate_by = 20
 
 
 class PostDetail(DetailView):
@@ -34,32 +32,54 @@ class PostDetail(DetailView):
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'post'
 
+    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
+        obj = cache.get(f'post-{self.kwargs["pk"]}', None)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(PostDetail, self).get_context_data(**kwargs)
+        users = list()
+        comments = list(Comment.objects.filter(post_id=self.kwargs["pk"]).values('id', 'text', 'user_id', 'creation_time'))
+        for comment in comments:
+            user_name = User.objects.filter(id=comment['user_id']).values('username')[0]['username']
+            users.append(user_name)
+
+        context['comment_text'] = {
+            'text': comments,
+            'user': users,
+        }
+        return context
+
 
 class CategoriesList(ListView):
     model = Category
-    ordering = 'category'
     template_name = 'categories.html'
     context_object_name = 'categories'
+    paginate_by = 20
 
     def get(self, request, *args, **kwargs):
         category = Category.objects.all()
         return render(request, 'categories.html', {"category": category})
 
 
-class CategoryView(View):
+class CategoryView(DetailView):
     model = Category
-    template_name = 'categories.html'
+    template_name = 'category.html'
     context_object_name = 'category'
+    paginate_by = 15
 
-    def get(self, request, pk, *args, **kwargs):
-        category = Category.objects.get(id=pk)
-        for post_obj in Post.objects.filter():
-            post_obj.category.filter(category_name=category)
-
-        return render(request, 'category.html', {'category': category})
+    def get_context_data(self, **kwargs):
+        context = super(CategoryView, self).get_context_data(**kwargs)
+        context['category_post'] = list(
+            Post.objects.filter(category=self.kwargs["pk"]).values('title', 'text', 'rating')
+        )
+        return context
 
     def post(self, request, pk, *args, **kwargs):
-        category = Category.objects.get(id=pk)
+        category = Category.objects.get(id=self.kwargs["pk"])
         category.subscribers.add(request.user.id)
         return redirect('categories')
 
